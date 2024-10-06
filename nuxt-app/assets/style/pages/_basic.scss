@@ -18,4 +18,28 @@
     &:hover {
         opacity: .8;
     }
+
+    @media screen and (max-width: map-get($display-breakpoints, 'lg')) {
+        font-size: 16px;
+    }
+    @media screen and (max-width: map-get($display-breakpoints, 'xm')) {
+        font-size: 14px;
+    }
+}
+
+.wrapper {
+    padding: 1.5rem 6rem;
+
+    @media screen and (max-width: map-get($display-breakpoints, 'md')) {
+        padding: 1.5rem 2rem;
+    }
+    @media screen and (max-width: map-get($display-breakpoints, 'sm')) {
+        padding: 1.5rem 0;
+    }
+}
+
+.section__title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 2rem;
 }

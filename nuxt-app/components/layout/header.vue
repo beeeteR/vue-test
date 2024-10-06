@@ -6,12 +6,12 @@ const countItems = computed(() => cartStore.getCartCountItems)
 </script>
 
 <template>
-    <div class="header">
+    <div class="header wrapper">
         <nuxt-link to="/" class="header__logo">
-            <NuxtImg src="images/logo.png" />
+            <nuxt-img src="images/logo.png" />
         </nuxt-link>
         <nuxt-link to="/cart" class="header__cart-btn">
-            <NuxtImg src="icons/cart.svg" />
+            <nuxt-img src="icons/cart.svg" />
             <span class="cart-btn__count" v-if="countItems">{{ countItems }}</span>
         </nuxt-link>
     </div>
@@ -21,8 +21,21 @@ const countItems = computed(() => cartStore.getCartCountItems)
 .header {
     display: flex;
     justify-content: space-between;
-    padding: 1.5rem 6rem;
+    align-items: center;
     box-shadow: 0 2px 8px 1px map-get($colors, 'light-grey');
+
+    @media screen and (max-width: map-get($display-breakpoints, 'sm')) {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    &__logo {
+        min-width: 120px;
+
+        img {
+            width: 100%;
+        }
+    }
 
     &__cart-btn {
         position: relative;
@@ -35,16 +48,16 @@ const countItems = computed(() => cartStore.getCartCountItems)
 
         .cart-btn__count {
             position: absolute;
-            min-width: 28px;
-            min-height: 28px;
-            padding: 3px;
+            min-width: 36px;
+            padding: 4px;
+            margin: 0 2px;
             top: -16px;
-            right: -16px;
+            right: -24px;
             text-align: center;
             font-weight: 500;
             color: white;
             background-color: map-get($colors, $key: 'pink');
-            border-radius: 50%;
+            border-radius: 1rem;
             z-index: 1;
         }
     }

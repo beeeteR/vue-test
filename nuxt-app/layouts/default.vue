@@ -2,7 +2,7 @@
 <template>
     <div class="page">
         <layout-header />
-        <div class="page__content">
+        <div class="page__content wrapper">
             <slot></slot>
         </div>
     </div>
@@ -12,7 +12,6 @@
 .page {
     &__content {
         margin-top: 2rem;
-        padding: 1rem 6rem;
     }
 }
 </style>

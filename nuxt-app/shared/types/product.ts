@@ -17,7 +17,7 @@ interface IProductBase {
     sku: string,
     title: string,
     regular_price: {
-        currency: EWallet,
+        currency: keyof typeof  EWallet,
         value: number
     },
     image: TImageUrl,
@@ -33,4 +33,4 @@ interface IProductSimple extends IProductBase {
     type: ETypeProduct.simple
 }
 
-export type TProduct = IProductConfigurable | IProductSimple 
+export type TProduct = IProductConfigurable | IProductSimple

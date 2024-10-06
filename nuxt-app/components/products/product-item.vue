@@ -1,58 +1,48 @@
 <script lang="ts" setup>
 import { EWallet, type TProduct } from '~/shared/types/product';
-import brands from '~/public/brands.json'
 
-interface IPropsProductItem {
+interface IPropsProductItemComponent {
     product: TProduct
 }
 
 const cartStore = useCartStore()
-const props = defineProps<IPropsProductItem>()
-const brandTitle = computed(() => brands.find(brand => props.product.brand === brand.id)?.title)
+const brandsStore = useBrandsStore()
+const props = defineProps<IPropsProductItemComponent>()
+const brandTitle = computed(() => brandsStore.getBrandById(props.product.brand)?.title)
 const inCart = computed(() => cartStore.checkProductInCart(props.product.id))
+const countProductInCart = computed(() => cartStore.getCartItemForProductId(props.product.id)?.count)
 let cartItemId: number | null = null
 
 function addItemToCart() {
-    if (inCart.value) useRouter().push('/cart')
-    else {
-        cartItemId = cartStore.addCartItem(props.product.id)
-    }
+    cartItemId = cartStore.addCartItem(props.product.id)
 }
 
-function changeCartItemCount(action: '+' | '-') {
-    cartStore.changeCountCartItem(cartItemId!, action)
+function emitChangeCartItemCount(action: '+' | '-') {
+    changeCartItemCount(cartItemId!, action)
 }
+
+onMounted(() => {
+    if (inCart.value) {
+        cartItemId = cartStore.getCartItemForProductId(props.product.id)!.id
+    }
+})
 
 </script>
 <template>
     <div class="product__item">
         <div class="product__img">
-            <NuxtImg preload :src="`${props.product.image}`" />
+            <nuxt-img preload :src="`${product.image}`" />
         </div>
         <div class="product__info">
-            <h3 class="product__info-title">{{ props.product.title }}</h3>
+            <h3 class="product__info-title">{{ product.title }}</h3>
             <p class="product__info-brand">{{ brandTitle }}</p>
             <div class="product__info-price">
-                <span class="price__wallet">{{ EWallet[props.product.regular_price.currency] }}</span>
-                <span class="price__value">{{ props.product.regular_price.value }}</span>
+                <span class="price__wallet">{{ EWallet[product.regular_price.currency] }}</span>
+                <span class="price__value">{{ product.regular_price.value }}</span>
             </div>
         </div>
-        <div class="product__add-btn">
-            <button class="btn add-btn" :class="{ '--in-cart': inCart }" @click="addItemToCart">
-                <div class="add-btn__link-to-cart" v-show="inCart">
-                    <span>In Cart</span>
-                    <span>Go to Cart</span>
-                </div>
-                <span v-show="!inCart">Add to Cart</span>
-            </button>
-            <div class="add-btn__actions" v-if="inCart">
-                <button class="btn actions__item" @click="changeCartItemCount('-')">-</button>
-                <span class="actions__item actions__count-product">{{
-                    cartStore.getCartitemForProductId(props.product.id)?.count }}
-                </span>
-                <button class="btn actions__item" @click="changeCartItemCount('+')">+</button>
-            </div>
-        </div>
+        <products-btn-add-to-cart :count="countProductInCart" :in-cart="inCart" :small-btns="true" @add-to-cart="addItemToCart"
+            @change-count="emitChangeCartItemCount" class="product__add-btn" />
     </div>
 </template>
 
@@ -62,6 +52,14 @@ function changeCartItemCount(action: '+' | '-') {
         padding: 1rem 1.5rem;
         box-shadow: inset 0 0 4px 1px map-get($colors, $key: 'light-grey');
         transition: all 500ms;
+
+        @media screen and (max-width: map-get($display-breakpoints, 'lg')) {
+            padding: 1rem;
+        }
+
+        @media screen and (max-width: map-get($display-breakpoints, 'xm')) {
+            padding: .5rem;
+        }
 
         &:hover {
             background-color: map-get($colors, $key: 'light-grey');
@@ -83,66 +81,28 @@ function changeCartItemCount(action: '+' | '-') {
         font-size: 18px;
         padding-top: 1rem;
 
+        @media screen and (max-width: map-get($display-breakpoints, 'lg')) {
+            display: flex;
+            flex-direction: column;
+            gap: .25rem;
+        }
+
+        @media screen and (max-width: map-get($display-breakpoints, 'xm')) {
+            font-size: 16px;
+        }
+
         &-title {
             grid-column: 1 / 3;
             font-size: 20px;
             font-weight: 500;
+
+            @media screen and (max-width: map-get($display-breakpoints, 'xm')) {
+                font-size: 18px;
+            }
         }
 
         &-price {
             justify-self: end;
-        }
-    }
-
-    &__add-btn {
-        display: flex;
-        gap: .5rem;
-        margin-top: 1rem;
-        transition: all 300ms;
-
-        .--in-cart {
-            background-color: map-get($colors, 'green');
-            min-width: 7rem;
-            width: fit-content;
-        }
-
-        .add-btn {
-            &__link-to-cart {
-                display: flex;
-                flex-direction: column;
-                gap: .25rem;
-
-                span {
-                    &:nth-child(2) {
-                        font-weight: 400;
-                        font-size: 16px;
-                    }
-                }
-            }
-
-            &__actions {
-                position: relative;
-                display: flex;
-                align-items: center;
-                width: 100%;
-
-                .actions {
-                    &__item {
-                        max-width: 56px;
-                        height: 100%;
-                        user-select: none;
-                    }
-
-                    &__count-product {
-                        margin: 0 4px;
-                        min-width: 36px;
-                        text-align: center;
-                        font-size: 18px;
-                        font-weight: 500;
-                        height: fit-content;
-                    }
-                }
-            }
         }
     }
 }

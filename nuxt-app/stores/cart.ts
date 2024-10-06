@@ -7,13 +7,13 @@ export const useCartStore = defineStore('cartStore', {
     }),
     getters: {
         getCartItemForCartId: (state) => (itemId: number) => state.cart.find(item => item.id === itemId),
-        getCartitemForProductId: (state) => (productId: number) => state.cart.find(item => item.productId === productId),
+        getCartItemForProductId: (state) => (productId: number) => state.cart.find(item => item.productId === productId),
         getCart: (state) => state.cart,
         getCartCountItems: (state) => state.cart.reduce((acc, item) => {
             return acc += item.count
         }, 0),
         checkProductInCart(state) {
-            return (productId: number) => Boolean(this.getCartitemForProductId(productId))
+            return (productId: number) => Boolean(this.getCartItemForProductId(productId))
         }
     },
     actions: {
@@ -26,11 +26,17 @@ export const useCartStore = defineStore('cartStore', {
             })
             return id
         },
-        changeCountCartItem(cartItemId: number, action: '+' | '-', count?: number) {
+        changeCountCartItem(cartItemId: number, action: '+' | '-') {
             const cartItem = this.cart.find(item => item.id === cartItemId)
             if (cartItem) {
-                if (count) cartItem!.count = count
-                else cartItem.count = eval(`${cartItem.count}${action}${1}`)
+                switch (action) {
+                    case '+':
+                        cartItem.count += 1
+                        break;
+                    case '-':
+                        cartItem.count -= 1
+                        break;
+                }
                 if (cartItem.count === 0) this.deleteCartItem(cartItem.id)
             }
         },

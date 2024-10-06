@@ -1,8 +1,16 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+
+interface IPropsNotFoundComponent {
+    title?: string,
+    notShowIcon?: true
+}
+const props = defineProps<IPropsNotFoundComponent>()
+
+</script>
 <template>
     <div class="not-found">
-    <NuxtImg src="icons/not-found.svg" class="not-found__img" />
-        <h1 class="not-found__title">По вашему запросу ничего не найдено.</h1>
+    <nuxt-img src="icons/not-found.svg" class="not-found__img" v-show="!notShowIcon"/>
+        <h1 class="not-found__title">{{ title ? title : 'По вашему запросу ничего не найдено.' }}</h1>
     </div>
 </template>
 
